@@ -547,7 +547,9 @@ document.addEventListener("DOMContentLoaded", () => {
       menuItems.forEach(menu => menu.classList.remove("active"));
       item.classList.add("active");
 
-      const nome = item.textContent.trim();
+      const copiaItem = item.cloneNode(true);
+copiaItem.querySelector(".nav-icon")?.remove();
+const nome = copiaItem.textContent.trim();
       const pagina = pages[nome];
 
       if (!pagina) return;
