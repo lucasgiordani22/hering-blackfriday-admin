@@ -415,6 +415,7 @@ td {
   </aside>
 
   <main class="main">
+  <div id="pagina-inicial">
     <div class="topbar">
       <div class="breadcrumb">Painel administrativo / <strong>Visão geral</strong></div>
       <div class="user">
@@ -524,12 +525,14 @@ td {
     <div class="footer-note">
       EXPEDIÇÃO SUBMERSA · SISTEMA INTERNO DE GESTÃO · 2026
     </div>
+  </div>
   </main>
-</div><script>
+</div>
+  <script>
 document.addEventListener("DOMContentLoaded", () => {
   const menuItems = document.querySelectorAll(".nav-item");
 
-  const pages = {
+  const nomes = {
     "Visão geral": "dashboard",
     "Planilha de pontos": "planilha",
     "Lançar pontuação": "lancamento",
@@ -541,63 +544,42 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   menuItems.forEach(item => {
-    item.style.cursor = "pointer";
-
     item.addEventListener("click", () => {
       menuItems.forEach(menu => menu.classList.remove("active"));
       item.classList.add("active");
 
-      const copiaItem = item.cloneNode(true);
-copiaItem.querySelector(".nav-icon")?.remove();
-const nome = copiaItem.textContent.trim();
-      const pagina = pages[nome];
+      const copia = item.cloneNode(true);
+      copia.querySelector(".nav-icon")?.remove();
+      const nome = copia.textContent.trim();
 
-      if (!pagina) return;
+      const main = document.querySelector("main");
+      const dashboard = document.getElementById("pagina-inicial");
 
-      const titulo = document.querySelector("main h1, main h2");
-      if (titulo) {
-        titulo.textContent = nome;
-      }
+      if (!main) return;
 
-      const conteudo = document.querySelector("main");
-      if (conteudo) {
+      if (nome === "Visão geral") {
+        if (dashboard) dashboard.style.display = "";
         const aviso = document.getElementById("pagina-em-construcao");
-
-        if (pagina === "dashboard") {
-          if (aviso) aviso.remove();
-          document.querySelectorAll("main > *").forEach(el => {
-            if (el.dataset.originalDisplay) {
-              el.style.display = el.dataset.originalDisplay;
-            }
-          });
-        } else {
-          document.querySelectorAll("main > *").forEach(el => {
-            if (el.id !== "pagina-em-construcao") {
-              if (!el.dataset.originalDisplay) {
-                el.dataset.originalDisplay = getComputedStyle(el).display;
-              }
-              el.style.display = "none";
-            }
-          });
-
-          if (!document.getElementById("pagina-em-construcao")) {
-            const mensagem = document.createElement("div");
-            mensagem.id = "pagina-em-construcao";
-            mensagem.className = "panel";
-            mensagem.style.marginTop = "24px";
-            mensagem.innerHTML = `
-              <h3>${nome}</h3>
-              <p>Esta área está sendo preparada. Em breve, você poderá gerenciar essas informações por aqui.</p>
-            `;
-            conteudo.appendChild(mensagem);
-          } else {
-            document.querySelector("#pagina-em-construcao h3").textContent = nome;
-          }
-        }
+        if (aviso) aviso.remove();
+        return;
       }
+
+      if (dashboard) dashboard.style.display = "none";
+
+      let aviso = document.getElementById("pagina-em-construcao");
+
+      if (!aviso) {
+        aviso = document.createElement("section");
+        aviso.id = "pagina-em-construcao";
+        aviso.className = "panel";
+        main.appendChild(aviso);
+      }
+
+      aviso.innerHTML = `
+        <h2>${nome}</h2>
+        <p>Esta área está sendo preparada para a Expedição Submersa.</p>
+      `;
     });
   });
 });
-</script>
-</body>
 </html>
