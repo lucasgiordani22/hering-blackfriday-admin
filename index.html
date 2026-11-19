@@ -525,6 +525,77 @@ td {
       EXPEDIÇÃO SUBMERSA · SISTEMA INTERNO DE GESTÃO · 2026
     </div>
   </main>
-</div>
+</div><script>
+document.addEventListener("DOMContentLoaded", () => {
+  const menuItems = document.querySelectorAll(".nav-item");
+
+  const pages = {
+    "Visão geral": "dashboard",
+    "Planilha de pontos": "planilha",
+    "Lançar pontuação": "lancamento",
+    "Participantes": "participantes",
+    "Provas e critérios": "provas",
+    "Equipes": "equipes",
+    "Histórico de ações": "historico",
+    "Configurações": "configuracoes"
+  };
+
+  menuItems.forEach(item => {
+    item.style.cursor = "pointer";
+
+    item.addEventListener("click", () => {
+      menuItems.forEach(menu => menu.classList.remove("active"));
+      item.classList.add("active");
+
+      const nome = item.textContent.trim();
+      const pagina = pages[nome];
+
+      if (!pagina) return;
+
+      const titulo = document.querySelector("main h1, main h2");
+      if (titulo) {
+        titulo.textContent = nome;
+      }
+
+      const conteudo = document.querySelector("main");
+      if (conteudo) {
+        const aviso = document.getElementById("pagina-em-construcao");
+
+        if (pagina === "dashboard") {
+          if (aviso) aviso.remove();
+          document.querySelectorAll("main > *").forEach(el => {
+            if (el.dataset.originalDisplay) {
+              el.style.display = el.dataset.originalDisplay;
+            }
+          });
+        } else {
+          document.querySelectorAll("main > *").forEach(el => {
+            if (el.id !== "pagina-em-construcao") {
+              if (!el.dataset.originalDisplay) {
+                el.dataset.originalDisplay = getComputedStyle(el).display;
+              }
+              el.style.display = "none";
+            }
+          });
+
+          if (!document.getElementById("pagina-em-construcao")) {
+            const mensagem = document.createElement("div");
+            mensagem.id = "pagina-em-construcao";
+            mensagem.className = "panel";
+            mensagem.style.marginTop = "24px";
+            mensagem.innerHTML = `
+              <h3>${nome}</h3>
+              <p>Esta área está sendo preparada. Em breve, você poderá gerenciar essas informações por aqui.</p>
+            `;
+            conteudo.appendChild(mensagem);
+          } else {
+            document.querySelector("#pagina-em-construcao h3").textContent = nome;
+          }
+        }
+      }
+    });
+  });
+});
+</script>
 </body>
 </html>
