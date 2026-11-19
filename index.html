@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,8 +12,8 @@
 <body><div class="app">
 <aside class="sidebar"><div class="brand"><div class="brand-symbol">◈</div><h1>EXPEDIÇÃO<br>SUBMERSA</h1><p>Hering · Black Friday 2026</p></div>
 <div class="menu-label">GESTÃO DO EVENTO</div><nav>
-<button class="nav-item active" data-page="dashboard"><span class="nav-icon">⌂</span>Visão geral</button><button class="nav-item" data-page="planilha"><span class="nav-icon">▦</span>Planilha de pontos</button><button class="nav-item" data-page="lancamento"><span class="nav-icon">⚑</span>Lançar pontuação</button><button class="nav-item" data-page="participantes"><span class="nav-icon">♙</span>Participantes</button><button class="nav-item" data-page="provas"><span class="nav-icon">◉</span>Provas e critérios</button></nav>
-<div class="menu-label">ADMINISTRAÇÃO</div><nav><button class="nav-item" data-page="equipes"><span class="nav-icon">♟</span>Equipes</button><button class="nav-item" data-page="historico"><span class="nav-icon">▤</span>Histórico de ações</button><button class="nav-item" data-page="configuracoes"><span class="nav-icon">⚙</span>Configurações</button></nav><div class="sidebar-bottom">PAINEL RESTRITO<br>Acesso exclusivo à organização</div></aside>
+<button type="button" class="nav-item active" data-page="dashboard"><span class="nav-icon">⌂</span>Visão geral</button><button type="button" class="nav-item" data-page="planilha"><span class="nav-icon">▦</span>Planilha de pontos</button><button type="button" class="nav-item" data-page="lancamento"><span class="nav-icon">⚑</span>Lançar pontuação</button><button type="button" class="nav-item" data-page="participantes"><span class="nav-icon">♙</span>Participantes</button><button type="button" class="nav-item" data-page="provas"><span class="nav-icon">◉</span>Provas e critérios</button></nav>
+<div class="menu-label">ADMINISTRAÇÃO</div><nav><button type="button" class="nav-item" data-page="equipes"><span class="nav-icon">♟</span>Equipes</button><button type="button" class="nav-item" data-page="historico"><span class="nav-icon">▤</span>Histórico de ações</button><button type="button" class="nav-item" data-page="configuracoes"><span class="nav-icon">⚙</span>Configurações</button></nav><div class="sidebar-bottom">PAINEL RESTRITO<br>Acesso exclusivo à organização</div></aside>
 <main class="main"><div class="topbar"><div class="breadcrumb">Painel administrativo / <strong id="breadcrumb-title">Visão geral</strong></div><div class="user"><div class="avatar">A</div><span>Administrador</span></div></div>
 <section class="page active" id="page-dashboard"><div class="page-heading"><div><div class="eyebrow">Central de comando</div><h2>Visão geral</h2><div class="subtitle">Acompanhe o desempenho das equipes durante a expedição.</div></div><div class="event-tag">◉ EVENTO · 2026</div></div><div class="cards"><div class="card"><div class="card-top">EQUIPES CADASTRADAS<span>♟</span></div><div class="card-value">04</div><div class="card-note">Equipes participantes</div></div><div class="card"><div class="card-top">PROVAS CADASTRADAS<span>⚑</span></div><div class="card-value">09</div><div class="card-note">Atividades da expedição</div></div><div class="card"><div class="card-top">LANÇAMENTOS CONFIRMADOS<span>✓</span></div><div class="card-value">00</div><div class="card-note">Pontuações registradas</div></div></div><div class="panel"><div class="panel-header"><div><div class="panel-title">Classificação geral</div><div class="panel-description">Visão consolidada da pontuação das equipes.</div></div><span class="status">AGUARDANDO INÍCIO</span></div><div class="table-wrap"><table><thead><tr><th>Equipe</th><th>Maré Alta</th><th>Ação Social</th><th>Palpitômetro</th><th>Mímica</th><th>Passa ou Repassa</th><th>Music Awards</th><th>Desafio das Balas</th><th>Identidade</th><th>Ligação</th><th>Total</th></tr></thead><tbody id="dashboard-ranking"></tbody></table></div></div></section>
 <section class="page" id="page-planilha"><div class="page-heading"><div><div class="eyebrow">Acompanhamento</div><h2>Planilha de pontos</h2><div class="subtitle">Pontuação consolidada por equipe e por prova.</div></div><span class="event-tag">RANKING INTERNO</span></div><div class="notice">Esta é a visualização da planilha. Os valores serão preenchidos automaticamente quando os lançamentos estiverem conectados ao banco de dados.</div><div class="panel"><div class="panel-header"><div><div class="panel-title">Classificação por prova</div><div class="panel-description">As equipes aparecem nas linhas e as provas nas colunas.</div></div><button class="btn ghost" onclick="window.print()">Imprimir</button></div><div class="table-wrap"><table><thead id="score-head"></thead><tbody id="score-body"></tbody></table></div></div></section>
@@ -38,8 +38,32 @@ function renderTables(){
  ['score-team','participant-team'].forEach(id=>document.getElementById(id).innerHTML=teams.map(t=>`<option>${t}</option>`).join(''));
  document.getElementById('score-challenge').innerHTML=challenges.map(c=>`<option>${c}</option>`).join('');
 }
-function showPage(key){document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id==='page-'+key));document.querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('active',b.dataset.page===key));document.getElementById('breadcrumb-title').textContent=pageTitles[key]||'Painel';}
-document.querySelectorAll('.nav-item').forEach(btn=>btn.addEventListener('click',()=>showPage(btn.dataset.page)));
+function showPage(key){
+ const target=document.getElementById('page-'+key);
+ if(!target){console.error('Tela não encontrada:',key);return false;}
+ document.querySelectorAll('.page').forEach(section=>{section.classList.remove('active');section.setAttribute('aria-hidden','true');});
+ target.classList.add('active');target.setAttribute('aria-hidden','false');
+ document.querySelectorAll('.nav-item[data-page]').forEach(button=>{
+   const selected=button.dataset.page===key;
+   button.classList.toggle('active',selected);
+   button.setAttribute('aria-current',selected?'page':'false');
+ });
+ const breadcrumb=document.getElementById('breadcrumb-title');
+ if(breadcrumb) breadcrumb.textContent=pageTitles[key]||'Painel';
+ window.location.hash=key;
+ return true;
+}
+// Navegação delegada: continua funcionando mesmo se o menu for redesenhado.
+window.showPage=showPage;
+document.addEventListener('click',event=>{
+ const button=event.target.closest('.nav-item[data-page]');
+ if(!button)return;
+ event.preventDefault();
+ showPage(button.dataset.page);
+},true);
+// Abre a tela indicada no endereço, ou o dashboard por padrão.
+const initialPage=window.location.hash.replace('#','');
+if(initialPage && pageTitles[initialPage]) showPage(initialPage); else showPage('dashboard');
 document.getElementById('score-date').value=new Date().toISOString().slice(0,10);
 document.getElementById('score-form').addEventListener('submit',e=>{e.preventDefault();const r={team:document.getElementById('score-team').value,challenge:document.getElementById('score-challenge').value,points:Number(document.getElementById('score-points').value)||0,bonus:Number(document.getElementById('score-bonus').value)||0,penalty:Number(document.getElementById('score-penalty').value)||0,notes:document.getElementById('score-notes').value};records.push(r);document.getElementById('session-records').innerHTML=records.map(x=>`<tr><td>${x.team}</td><td>${x.challenge}</td><td>${x.points}</td><td>${x.bonus}</td><td>${x.penalty}</td><td><strong>${x.points+x.bonus-x.penalty}</strong></td><td>${x.notes||'—'}</td></tr>`).join('');e.target.reset();document.getElementById('score-date').value=new Date().toISOString().slice(0,10);});
 document.getElementById('participant-form').addEventListener('submit',e=>{e.preventDefault();people.push({name:document.getElementById('participant-name').value.trim(),team:document.getElementById('participant-team').value});document.getElementById('participants-list').innerHTML=people.map(p=>`<tr><td><strong>${p.name}</strong></td><td>${p.team}</td></tr>`).join('');e.target.reset();});
